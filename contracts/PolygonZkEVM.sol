@@ -431,7 +431,7 @@ contract PolygonZkEVM is
             .trustedAggregatorTimeout;
 
         // Constant deployment variables
-        batchFee = 0.1 ether; // 0.1 Matic
+        batchFee = 0;
         verifyBatchTimeTarget = 30 minutes;
         multiplierBatchFee = 1002;
         forceBatchTimeout = 5 days;

@@ -402,9 +402,8 @@ describe('Polygon ZK-EVM', () => {
             .to.be.revertedWith('OnlyTrustedSequencer');
 
         // revert because tokens were not approved
-        // BatchFee is zero so no tokens are needed
-        // await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches([sequence], trustedSequencer.address))
-        //     .to.be.revertedWith('ERC20: insufficient allowance');
+        await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches([sequence], trustedSequencer.address))
+            .to.be.revertedWith('ERC20: insufficient allowance');
 
         const initialOwnerBalance = await maticTokenContract.balanceOf(
             await trustedSequencer.address,
