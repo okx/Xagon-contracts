@@ -1,19 +1,9 @@
 const { expect } = require('chai');
 const { ethers, upgrades } = require('hardhat');
-const MerkleTreeBridge = require('@0xpolygonhermez/zkevm-commonjs').MTBridge;
-const {
-    verifyMerkleProof,
-    getLeafValue,
-} = require('@0xpolygonhermez/zkevm-commonjs').mtBridgeUtils;
-
-function calculateGlobalExitRoot(mainnetExitRoot, rollupExitRoot) {
-    return ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [mainnetExitRoot, rollupExitRoot]);
-}
 
 describe('PolygonZkEVMBridgeL2 Contract', () => {
     let deployer;
     let rollup;
-    let acc1;
     let zkevmAddress;
 
     let polygonZkEVMGlobalExitRoot;
@@ -33,22 +23,17 @@ describe('PolygonZkEVMBridgeL2 Contract', () => {
 
     const gasTokenName = 'Gas Token';
     const gasTokenSymbol = 'GAS';
-    const gasTokenMetadata = ethers.utils.defaultAbiCoder.encode(
-        ['string', 'string', 'uint8'],
-        [gasTokenName, gasTokenSymbol, decimals],
-    );
 
     const networkIDMainnet = 0;
     const networkIDRollup = 1;
 
     const LEAF_TYPE_ASSET = 0;
-    const LEAF_TYPE_MESSAGE = 1;
 
     let polygonZkEVMAddress;
 
     beforeEach('Deploy contracts', async () => {
         // load signers
-        [deployer, rollup, acc1, zkevmAddress] = await ethers.getSigners();
+        [deployer, rollup, zkevmAddress] = await ethers.getSigners();
 
         polygonZkEVMAddress = zkevmAddress.address;
 
@@ -206,7 +191,7 @@ describe('PolygonZkEVMBridgeL2 Contract', () => {
             '0x',
         )).to.emit(polygonZkEVMBridgeContract, 'BridgeEvent')
             .withArgs(
-                0,
+                LEAF_TYPE_ASSET,
                 networkIDRollup,
                 tokenContract.address,
                 networkIDMainnet,
