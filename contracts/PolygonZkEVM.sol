@@ -133,10 +133,10 @@ contract PolygonZkEVM is
     uint256 internal constant _MAX_BATCH_MULTIPLIER = 12;
 
     // Max batch fee value
-    uint256 internal constant _MAX_BATCH_FEE = 1000 ether;
+    uint256 internal  _maxBatchFee = 1000 ether;
 
     // Min value batch fee
-    uint256 internal constant _MIN_BATCH_FEE = 1 gwei;
+    uint256 internal  _minBatchFee = 0 gwei;
 
     // Goldilocks prime field
     uint256 internal constant _GOLDILOCKS_PRIME_FIELD = 0xFFFFFFFF00000001; // 2 ** 64 - 2 ** 32 + 1
@@ -995,10 +995,10 @@ contract PolygonZkEVM is
         }
 
         // Batch fee must remain inside a range
-        if (batchFee > _MAX_BATCH_FEE) {
-            batchFee = _MAX_BATCH_FEE;
-        } else if (batchFee < _MIN_BATCH_FEE) {
-            batchFee = _MIN_BATCH_FEE;
+        if (batchFee > _maxBatchFee) {
+            batchFee = _maxBatchFee;
+        } else if (batchFee <= _minBatchFee) {
+            batchFee = _minBatchFee;
         }
     }
 
@@ -1553,6 +1553,33 @@ contract PolygonZkEVM is
             }
         }
         _activateEmergencyState();
+    }
+
+    /**
+     * @notice Function to set the batch fee
+     * @param newBatchFee New batch fee
+     */
+    function setBatchFee(
+        uint16 newBatchFee
+    ) external onlyAdmin {
+        if (newBatchFee < _minBatchFee || newBatchFee > _maxBatchFee) {
+            revert InvalidRangeBatchFee();
+        }
+
+        batchFee = newBatchFee;
+    }
+
+    /**
+     * @notice Function to set the batch fee range
+     * @param newMinBatchFee  New min batch fee
+     * @param newMaxBatchFee  New max batch fee
+     */
+    function setBatchFeeRange(
+        uint16 newMinBatchFee,
+        uint16 newMaxBatchFee
+    ) external onlyAdmin {
+        _minBatchFee = newMinBatchFee;
+        _maxBatchFee = newMaxBatchFee;
     }
 
     /**
