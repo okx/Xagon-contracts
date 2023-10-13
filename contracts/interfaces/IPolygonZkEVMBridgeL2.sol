@@ -68,6 +68,11 @@ interface IPolygonZkEVMBridgeL2 {
      */
     error NotValidSignature();
 
+    /**
+     * @dev Thrown when the L2 token is not approved
+     */
+    error TokenNotPermitted();
+
     function bridgeAsset(
         uint32 destinationNetwork,
         address destinationAddress,
@@ -116,4 +121,8 @@ interface IPolygonZkEVMBridgeL2 {
     function activateEmergencyState() external;
 
     function deactivateEmergencyState() external;
+
+    function setL2TokenBridgePermission(address token, bool allowed) external;
+
+    function setAllL2TokensAllowed(bool allowed) external;
 }

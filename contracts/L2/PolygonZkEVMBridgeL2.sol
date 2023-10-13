@@ -77,6 +77,12 @@ contract PolygonZkEVMBridgeL2 is
     // WETH address
     TokenWrapped public WETHToken;
 
+    // all l2 tokens allowed to be bridged
+    bool public isAllL2TokensAllowed;
+
+    // mapping of allowed L2 tokens
+    mapping(address => bool) public isTokenAllowed;
+
     /**
      * @param _networkID networkID
      * @param _globalExitRootManager global exit root manager address
@@ -150,6 +156,16 @@ contract PolygonZkEVMBridgeL2 is
     );
 
     /**
+     * @dev Emitted when a new L2 token permission is set
+     */
+    event L2TokenPermissionSet(address token, bool allowed);
+
+    /**
+     * @dev Emitted when all L2 tokens permission is set
+     */
+    event AllL2TokensPermissionSet(bool allowed);
+
+    /**
      * @notice Deposit add a new leaf to the merkle tree
      * @param destinationNetwork Network destination
      * @param destinationAddress Address destination
@@ -215,6 +231,12 @@ contract PolygonZkEVMBridgeL2 is
                     originTokenAddress = tokenInfo.originTokenAddress;
                     originNetwork = tokenInfo.originNetwork;
                 } else {
+
+                    // Check if the token is allowed
+                    if (!isAllL2TokensAllowed && !isTokenAllowed[token]) {
+                        revert TokenNotPermitted();
+                    }
+                    
                     // Use permit if any
                     if (permitData.length != 0) {
                         _permit(token, amount, permitData);
@@ -600,6 +622,23 @@ contract PolygonZkEVMBridgeL2 is
      */
     function deactivateEmergencyState() external onlyPolygonZkEVM {
         _deactivateEmergencyState();
+    }
+
+    function setL2TokenBridgePermission(address token, bool allowed) external onlyPolygonZkEVM {
+        require(token != address(0), "Invalid token address");
+        require(allowed != isTokenAllowed[token], "Token already has the permission");
+
+        isTokenAllowed[token] = allowed;
+
+        emit L2TokenPermissionSet(token, allowed);
+    }
+
+    function setAllL2TokensAllowed(bool allowed) external onlyPolygonZkEVM {
+        require(allowed != isAllL2TokensAllowed, "All L2 tokens already have the permission");
+
+        isAllL2TokensAllowed = allowed;
+
+        emit AllL2TokensPermissionSet(allowed);
     }
 
     /**
