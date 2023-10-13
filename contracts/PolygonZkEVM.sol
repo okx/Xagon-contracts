@@ -133,10 +133,10 @@ contract PolygonZkEVM is
     uint256 internal constant _MAX_BATCH_MULTIPLIER = 12;
 
     // Max batch fee value
-    uint256 internal  _maxBatchFee = 1000 ether;
+    uint256 internal  _maxBatchFee;
 
     // Min value batch fee
-    uint256 internal  _minBatchFee = 0 gwei;
+    uint256 internal  _minBatchFee;
 
     // Goldilocks prime field
     uint256 internal constant _GOLDILOCKS_PRIME_FIELD = 0xFFFFFFFF00000001; // 2 ** 64 - 2 ** 32 + 1
@@ -437,6 +437,9 @@ contract PolygonZkEVM is
         forceBatchTimeout = 5 days;
         isForcedBatchDisallowed = true;
 
+        _maxBatchFee = 1000 ether;
+        _minBatchFee = 0 gwei;
+
         // Initialize OZ contracts
         __Ownable_init_unchained();
 
@@ -665,7 +668,7 @@ contract PolygonZkEVM is
         );
 
         // Update batch fees
-        _updateBatchFee(finalNewBatch);
+        if (batchFee != 0) _updateBatchFee(finalNewBatch);
 
         if (pendingStateTimeout == 0) {
             // Consolidate state
@@ -817,6 +820,8 @@ contract PolygonZkEVM is
         if (!rollupVerifier.verifyProof(proof, [inputSnark])) {
             revert InvalidProof();
         }
+
+        if (batchFee == 0) return;
 
         // Get MATIC reward
         matic.safeTransfer(
@@ -1021,6 +1026,10 @@ contract PolygonZkEVM is
     ) public isForceBatchAllowed ifNotEmergencyState {
         // Calculate matic collateral
         uint256 maticFee = getForcedBatchFee();
+
+        if (maticFee == 0){
+           revert ForceBatchFeeIsZero();
+        }
 
         if (maticFee > maticAmount) {
             revert NotEnoughMaticAmount();
