@@ -209,13 +209,4 @@ interface IPolygonZkEVMErrors {
      */
     error ForceBatchesAlreadyActive();
 
-    /**
-     * @dev Thrown when the batch fee is not inside the valid range
-     */
-    error InvalidRangeBatchFee();
-
-    /**
-     * @dev Thrown when the batch fee is zero
-     */
-    error ForceBatchFeeIsZero();
 }
