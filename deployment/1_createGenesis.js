@@ -96,7 +96,7 @@ async function main() {
         const polygonZkEVMBridgeFactory = await ethers.getContractFactory('PolygonZkEVMBridge', deployer);
         const deployTransactionBridge = (polygonZkEVMBridgeFactory.getDeployTransaction()).data;
         // Mandatory to override the gasLimit since the estimation with create are mess up D:
-        const overrideGasLimit = ethers.BigNumber.from(5500000);
+        const overrideGasLimit = ethers.BigNumber.from(8500000);
         [bridgeImplementationAddress] = await create2Deployment(
             zkEVMDeployerContract,
             salt,
@@ -166,7 +166,7 @@ async function main() {
         const polygonZkEVMBridgeFactory = await ethers.getContractFactory('PolygonZkEVMBridgeL2', deployer);
         const deployTransactionBridge = (polygonZkEVMBridgeFactory.getDeployTransaction()).data;
         // Mandatory to override the gasLimit since the estimation with create are mess up D:
-        const overrideGasLimit = ethers.BigNumber.from(5500000);
+        const overrideGasLimit = ethers.BigNumber.from(8500000);
         [bridgeImplementationAddress] = await create2Deployment(
             zkEVMDeployerContract,
             salt,

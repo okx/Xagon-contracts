@@ -93,6 +93,7 @@ async function main() {
                     deployOutputParameters.maticTokenAddress,
                     deployOutputParameters.verifierAddress,
                     deployOutputParameters.polygonZkEVMBridgeAddress,
+                    deployOutputParameters.dataCommitteeContract,
                     deployOutputParameters.chainID,
                     deployOutputParameters.forkID,
                 ],
