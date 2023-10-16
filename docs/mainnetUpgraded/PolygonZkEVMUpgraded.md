@@ -27,7 +27,7 @@ This contract will NOT BE USED IN PRODUCTION, will be used only in testnet envir
 |`_bridgeAddress` | contract IPolygonZkEVMBridge | Bridge address
 |`_dataCommitteeAddress` | contract IDataCommittee | Data committee address
 |`_chainID` | uint64 | L2 chainID
-|`_forkID` | uint64 | L2 forkID
+|`_forkID` | uint64 | Fork Id
 |`versionBeforeUpgrade` | uint256 | Last version before upgrade
 
 ### updateVersion
