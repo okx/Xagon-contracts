@@ -196,6 +196,24 @@ Function to deactivate the emergency state
 
 
 
+### setL2TokenBridgePermission
+```solidity
+  function setL2TokenBridgePermission(
+  ) external
+```
+
+
+
+
+### setAllL2TokensAllowed
+```solidity
+  function setAllL2TokensAllowed(
+  ) external
+```
+
+
+
+
 ### _verifyLeaf
 ```solidity
   function _verifyLeaf(
@@ -361,4 +379,20 @@ Emitted when a claim is done from another network
 ```
 
 Emitted when a new wrapped token is created
+
+### L2TokenPermissionSet
+```solidity
+  event L2TokenPermissionSet(
+  )
+```
+
+Emitted when a new L2 token permission is set
+
+### AllL2TokensPermissionSet
+```solidity
+  event AllL2TokensPermissionSet(
+  )
+```
+
+Emitted when all L2 tokens permission is set
 
