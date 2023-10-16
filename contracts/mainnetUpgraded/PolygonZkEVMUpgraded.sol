@@ -24,7 +24,7 @@ contract PolygonZkEVMUpgraded is PolygonZkEVM {
      * @param _bridgeAddress Bridge address
      * @param _dataCommitteeAddress Data committee address
      * @param _chainID L2 chainID
-     * @param _forkID L2 forkID
+     * @param _forkID Fork Id
      * @param versionBeforeUpgrade Last version before upgrade
      */
     constructor(
