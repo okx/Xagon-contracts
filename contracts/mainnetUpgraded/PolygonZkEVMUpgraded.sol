@@ -22,14 +22,17 @@ contract PolygonZkEVMUpgraded is PolygonZkEVM {
      * @param _matic MATIC token address
      * @param _rollupVerifier Rollup verifier address
      * @param _bridgeAddress Bridge address
+     * @param _dataCommitteeAddress Data committee address
      * @param _chainID L2 chainID
+     * @param _forkID L2 forkID
+     * @param versionBeforeUpgrade Last version before upgrade
      */
     constructor(
         IPolygonZkEVMGlobalExitRoot _globalExitRootManager,
         IERC20Upgradeable _matic,
         IVerifierRollup _rollupVerifier,
         IPolygonZkEVMBridge _bridgeAddress,
-        IDataCommittee _dataComiteeAddress,
+        IDataCommittee _dataCommitteeAddress,
         uint64 _chainID,
         uint64 _forkID,
         uint256 versionBeforeUpgrade
@@ -39,7 +42,7 @@ contract PolygonZkEVMUpgraded is PolygonZkEVM {
             _matic,
             _rollupVerifier,
             _bridgeAddress,
-            _dataComiteeAddress,
+            _dataCommitteeAddress,
             _chainID,
             _forkID
         )
