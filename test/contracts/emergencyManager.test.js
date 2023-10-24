@@ -81,7 +81,7 @@ describe('Emergency mode test', () => {
 
         // deploy DataCommittee
         const dataCommitteeFactory = await ethers.getContractFactory('DataCommittee');
-        dataCommitteeContract = await upgrades.deployProxy(
+        const dataCommitteeContract = await upgrades.deployProxy(
             dataCommitteeFactory,
             [],
             { initializer: false },
@@ -168,7 +168,7 @@ describe('Emergency mode test', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
             minForcedTimestamp: 0,

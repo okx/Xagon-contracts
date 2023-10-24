@@ -414,7 +414,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
             minForcedTimestamp: 0,
@@ -490,7 +490,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -498,7 +498,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence2 = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -618,7 +618,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txDataForceBatch,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: lastGlobalExitRoot,
             timestamp: currentTimestamp,
             minForcedTimestamp: currentTimestamp,
@@ -626,7 +626,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence2 = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -716,7 +716,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: 0,
             minForcedTimestamp: 0,
@@ -724,7 +724,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence2 = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: 0,
             minForcedTimestamp: 0,
@@ -878,7 +878,7 @@ describe('Polygon ZK-EVM', () => {
 
         const forceBatchStruct = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: lastGlobalExitRoot,
             minForcedTimestamp: timestampForceBatch,
         };
@@ -897,7 +897,7 @@ describe('Polygon ZK-EVM', () => {
 
         const forceBatchStructBad = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: lastGlobalExitRoot,
             minForcedTimestamp: timestampForceBatch,
         };
@@ -951,7 +951,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -1123,7 +1123,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -1274,7 +1274,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -1434,7 +1434,7 @@ describe('Polygon ZK-EVM', () => {
         const batchesForSequence = 5;
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -1813,7 +1813,7 @@ describe('Polygon ZK-EVM', () => {
 
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
             minForcedTimestamp: 0,
@@ -1863,7 +1863,7 @@ describe('Polygon ZK-EVM', () => {
         const batchesForSequence = 5;
         const sequence = {
             transactions: l2txData,
-            transactionsHash: ethers.utils.formatBytes32String("0"),
+            transactionsHash: ethers.utils.formatBytes32String('0'),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,

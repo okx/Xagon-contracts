@@ -104,7 +104,7 @@ describe('Polygon ZK-EVM', () => {
 
         // deploy DataCommittee
         const dataCommitteeFactory = await ethers.getContractFactory('DataCommittee');
-        dataCommitteeContract = await upgrades.deployProxy(
+        const dataCommitteeContract = await upgrades.deployProxy(
             dataCommitteeFactory,
             [],
             { initializer: false },
