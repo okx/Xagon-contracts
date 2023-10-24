@@ -12,6 +12,7 @@ describe('PolygonZkEVMUpgraded', () => {
     let verifierContract;
     let polygonZkEVMBridgeContract;
     let polygonZkEVMContract;
+    let dataCommitteeContract;
     let maticTokenContract;
     let polygonZkEVMGlobalExitRoot;
 
@@ -66,9 +67,11 @@ describe('PolygonZkEVMUpgraded', () => {
             firstDeployment = false;
         }
         const nonceProxyBridge = Number((await ethers.provider.getTransactionCount(deployer.address))) + (firstDeployment ? 3 : 2);
-        const nonceProxyZkevm = nonceProxyBridge + 2; // Always have to redeploy impl since the polygonZkEVMGlobalExitRoot address changes
+        const nonceProxyCommittee = nonceProxyBridge + 1;
+        const nonceProxyZkevm = nonceProxyCommittee + 2; // Always have to redeploy impl since the polygonZkEVMGlobalExitRoot address changes
 
         const precalculateBridgeAddress = ethers.utils.getContractAddress({ from: deployer.address, nonce: nonceProxyBridge });
+        const precalculateCommitteeAddress = ethers.utils.getContractAddress({ from: deployer.address, nonce: nonceProxyCommittee });
         const precalculateZkevmAddress = ethers.utils.getContractAddress({ from: deployer.address, nonce: nonceProxyZkevm });
         firstDeployment = false;
 
@@ -83,6 +86,14 @@ describe('PolygonZkEVMUpgraded', () => {
         const polygonZkEVMBridgeFactory = await ethers.getContractFactory('PolygonZkEVMBridge');
         polygonZkEVMBridgeContract = await upgrades.deployProxy(polygonZkEVMBridgeFactory, [], { initializer: false });
 
+        // deploy DataCommittee
+        const dataCommitteeFactory = await ethers.getContractFactory('DataCommittee');
+        dataCommitteeContract = await upgrades.deployProxy(
+            dataCommitteeFactory,
+            [],
+            { initializer: false },
+        );
+
         // deploy PolygonZkEVMTestnet
         const PolygonZkEVMFactory = await ethers.getContractFactory('PolygonZkEVMUpgraded');
         polygonZkEVMContract = await upgrades.deployProxy(PolygonZkEVMFactory, [], {
@@ -92,6 +103,7 @@ describe('PolygonZkEVMUpgraded', () => {
                 maticTokenContract.address,
                 verifierContract.address,
                 polygonZkEVMBridgeContract.address,
+                dataCommitteeContract.address,
                 chainID,
                 forkID,
                 currentVersion,
@@ -100,6 +112,7 @@ describe('PolygonZkEVMUpgraded', () => {
         });
 
         expect(precalculateBridgeAddress).to.be.equal(polygonZkEVMBridgeContract.address);
+        expect(precalculateCommitteeAddress).to.be.equal(dataCommitteeContract.address);
         expect(precalculateZkevmAddress).to.be.equal(polygonZkEVMContract.address);
 
         await polygonZkEVMBridgeContract.initialize(networkIDMainnet, polygonZkEVMGlobalExitRoot.address, polygonZkEVMContract.address);
@@ -116,6 +129,14 @@ describe('PolygonZkEVMUpgraded', () => {
             networkName,
             version,
         );
+
+        // init data committee
+        await dataCommitteeContract.initialize();
+        const expectedHash = ethers.utils.solidityKeccak256(['bytes'], [[]]);
+        await expect(dataCommitteeContract.connect(deployer)
+            .setupCommittee(0, [], []))
+            .to.emit(dataCommitteeContract, 'CommitteeUpdated')
+            .withArgs(expectedHash);
 
         // fund sequencer address with Matic tokens
         await maticTokenContract.transfer(trustedSequencer.address, ethers.utils.parseEther('1000'));
@@ -148,6 +169,7 @@ describe('PolygonZkEVMUpgraded', () => {
                 maticTokenContract.address,
                 verifierContract.address,
                 polygonZkEVMBridgeContract.address,
+                dataCommitteeContract.address,
                 chainID,
                 forkID,
             ],
@@ -190,6 +212,7 @@ describe('PolygonZkEVMUpgraded', () => {
                     maticTokenContract.address,
                     verifierContract.address,
                     polygonZkEVMBridgeContract.address,
+                    dataCommitteeContract.address,
                     chainID,
                     forkID,
                     currentVersion],
@@ -236,6 +259,7 @@ describe('PolygonZkEVMUpgraded', () => {
         const batchesForSequence = 5;
         const sequence = {
             transactions: l2txData,
+            transactionsHash: ethers.utils.formatBytes32String("0"),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -250,7 +274,7 @@ describe('PolygonZkEVMUpgraded', () => {
 
         // Make 20 sequences of 5 batches, with 1 minut timestamp difference
         for (let i = 0; i < 20; i++) {
-            await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches(sequencesArray, trustedSequencer.address))
+            await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches(sequencesArray, trustedSequencer.address, []))
                 .to.emit(polygonZkEVMContract, 'SequenceBatches');
         }
         await ethers.provider.send('evm_increaseTime', [60]);
@@ -434,6 +458,7 @@ describe('PolygonZkEVMUpgraded', () => {
         const batchesForSequence = 5;
         const sequence = {
             transactions: l2txData,
+            transactionsHash: ethers.utils.formatBytes32String("0"),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -448,7 +473,7 @@ describe('PolygonZkEVMUpgraded', () => {
 
         // Make 20 sequences of 5 batches, with 1 minut timestamp difference
         for (let i = 0; i < 20; i++) {
-            await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches(sequencesArray, trustedSequencer.address))
+            await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches(sequencesArray, trustedSequencer.address, []))
                 .to.emit(polygonZkEVMContract, 'SequenceBatches');
         }
         await ethers.provider.send('evm_increaseTime', [60]);
@@ -527,6 +552,7 @@ describe('PolygonZkEVMUpgraded', () => {
         const batchesForSequence = 5;
         const sequence = {
             transactions: l2txData,
+            transactionsHash: ethers.utils.formatBytes32String("0"),
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
             minForcedTimestamp: 0,
@@ -541,7 +567,7 @@ describe('PolygonZkEVMUpgraded', () => {
 
         // Make 20 sequences of 5 batches, with 1 minut timestamp difference
         for (let i = 0; i < 20; i++) {
-            await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches(sequencesArray, trustedSequencer.address))
+            await expect(polygonZkEVMContract.connect(trustedSequencer).sequenceBatches(sequencesArray, trustedSequencer.address, []))
                 .to.emit(polygonZkEVMContract, 'SequenceBatches');
         }
         await ethers.provider.send('evm_increaseTime', [60]);

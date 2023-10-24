@@ -159,8 +159,8 @@ describe('Polygon Data Committee', () => {
         const PolygonZkEVMBridgeFactory = await ethers.getContractFactory('PolygonZkEVMBridge');
         PolygonZkEVMBridgeContract = await upgrades.deployProxy(PolygonZkEVMBridgeFactory, [], { initializer: false });
 
-        // deploy ValidiumMock
-        const ValidiumFactory = await ethers.getContractFactory('ValidiumMock');
+        // deploy PolygonZkEVMMock
+        const ValidiumFactory = await ethers.getContractFactory('PolygonZkEVMMock');
         validiumContract = await upgrades.deployProxy(ValidiumFactory, [], {
             initializer: false,
             constructorArgs: [
@@ -294,6 +294,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash = calculateBatchHashData(l2txData);
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
         const sequence = {
+            transactions: 0,
             transactionsHash,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
@@ -328,6 +329,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash = calculateBatchHashData(l2txData);
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
         const sequence = {
+            transactions: 0,
             transactionsHash,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
@@ -350,6 +352,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash = calculateBatchHashData(l2txData);
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
         const sequence = {
+            transactions: 0,
             transactionsHash,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
@@ -374,6 +377,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash = calculateBatchHashData(l2txData);
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
         const sequence = {
+            transactions: 0,
             transactionsHash,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
@@ -401,6 +405,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash = calculateBatchHashData(l2txData);
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
         const sequence = {
+            transactions: 0,
             transactionsHash,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
@@ -423,6 +428,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash = calculateBatchHashData(l2txData);
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
         const sequence = {
+            transactions: 0,
             transactionsHash,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
@@ -453,6 +459,7 @@ describe('Polygon Data Committee', () => {
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
 
         const sequence = {
+            transactions: 0,
             transactionsHash,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(currentTimestamp),
@@ -481,6 +488,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash1 = calculateBatchHashData(l2txData1);
         const timestamp1 = (await ethers.provider.getBlock()).timestamp;
         const sequence1 = {
+            transactions: 0,
             transactionsHash: transactionsHash1,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(timestamp1),
@@ -491,6 +499,7 @@ describe('Polygon Data Committee', () => {
         const transactionsHash2 = calculateBatchHashData(l2txData2);
         const timestamp2 = (await ethers.provider.getBlock()).timestamp;
         const sequence2 = {
+            transactions: 0,
             transactionsHash: transactionsHash2,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: ethers.BigNumber.from(timestamp2),
@@ -545,6 +554,7 @@ describe('Polygon Data Committee', () => {
         const currentTimestamp = (await ethers.provider.getBlock()).timestamp;
 
         const sequence1 = {
+            transactions: 0,
             transactionsHash: transactionsHashForceBatch,
             globalExitRoot: lastGlobalExitRoot,
             timestamp: currentTimestamp,
@@ -552,6 +562,7 @@ describe('Polygon Data Committee', () => {
         };
 
         const sequence2 = {
+            transactions: 0,
             transactionsHash: transactionsHash2,
             globalExitRoot: ethers.constants.HashZero,
             timestamp: currentTimestamp,
@@ -572,22 +583,22 @@ describe('Polygon Data Committee', () => {
         // Assert that the timestamp requirements must accomplish with force batches too
 
         sequence1.minForcedTimestamp += 1;
-        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, []))
+        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, [0x01]))
             .to.be.revertedWith('ForcedDataDoesNotMatch');
         sequence1.minForcedTimestamp -= 1;
 
         sequence1.timestamp -= 1;
-        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, []))
+        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, [0x01]))
             .to.be.revertedWith('SequencedTimestampBelowForcedTimestamp');
         sequence1.timestamp += 1;
 
         sequence1.timestamp = currentTimestamp + 10;
-        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, []))
+        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, [0x01]))
             .to.be.revertedWith('SequencedTimestampInvalid');
         sequence1.timestamp = currentTimestamp;
 
         sequence2.timestamp -= 1;
-        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, []))
+        await expect(validiumContract.connect(trustedSequencer).sequenceBatches([sequence1, sequence2], trustedSequencer.address, [0x01]))
             .to.be.revertedWith('SequencedTimestampInvalid');
         sequence2.timestamp += 1;
 
