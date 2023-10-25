@@ -77,6 +77,39 @@ describe('Polygon Data Committee', () => {
         return signatures;
     }
 
+    function getSignaturesWithWrongCommitteeMembers(hashToSign) {
+        let signatures = '0x';
+        for (let i = 0; i < requiredAmountOfSignatures - 1; i++) {
+            const derivationPath = addreessToDerivationPath(committeeMembers[i].addr);
+            const wallet = ethers.Wallet.fromMnemonic(
+                // eslint-disable-next-line no-undef
+                config.networks.hardhat.accounts.mnemonic,
+                // eslint-disable-next-line no-undef
+                `${config.networks.hardhat.accounts.path}/${derivationPath}`,
+            );
+            const signatureRsv = wallet._signingKey().signDigest(hashToSign);
+            const signature = ethers.utils.joinSignature(signatureRsv);
+            signatures += signature.slice(2);
+        }
+
+        const randomWallet = ethers.Wallet.createRandom();
+        const wrongSignatureRsv = randomWallet._signingKey().signDigest(hashToSign);
+        const wrongSignature = ethers.utils.joinSignature(wrongSignatureRsv);
+
+        signatures += wrongSignature.slice(2);
+
+        return signatures;
+    }
+
+    function genSignaturesAndAddrsWithCommitteeMembers(hashToSign) {
+        const signatures = getSignaturesWithWrongCommitteeMembers(hashToSign);
+        let encodedAssresses = '';
+        for (let i = 0; i < nMembers; i++) {
+            encodedAssresses += committeeMembers[i].addr.slice(2);
+        }
+        return signatures + encodedAssresses;
+    }
+
     function genSignaturesAndAddrs(hashToSign) {
         const signatures = getSignatures(hashToSign);
         let encodedAssresses = '';
@@ -414,10 +447,7 @@ describe('Polygon Data Committee', () => {
 
         // Sign committee data
         const hashToSign = await calculateLastAccInputHash([sequence]);
-        const signaturesAndAddrs = genSignaturesAndAddrs(hashToSign);
-
-        // Replace last address
-        const withWrongSignature = `0x1${signaturesAndAddrs.slice(3)}`;
+        const withWrongSignature = genSignaturesAndAddrsWithCommitteeMembers(hashToSign);
         await expect(validiumContract.connect(trustedSequencer)
             .sequenceBatches([sequence], deployer.address, withWrongSignature))
             .to.be.revertedWith('CommitteeAddressDoesntExist');
