@@ -193,7 +193,7 @@ async function main() {
             [
                 networkIDL2,
                 globalExitRootL2Address,
-                zkevmAddressL2,
+                initialZkEVMDeployerOwner,
                 gasTokenAddress,
                 gasTokenNetwork,
                 WETHToken.address,
