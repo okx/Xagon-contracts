@@ -12,7 +12,6 @@ import "../../interfaces/IPolygonValidium.sol";
  * The sequenced state is deterministic and can be precalculated before it's actually verified by a zkProof.
  * The aggregators will be able to verify the sequenced state with zkProofs and therefore make available the withdrawals from L2 network.
  * To enter and exit of the L2 network will be used a PolygonZkEVMBridge smart contract that will be deployed in both networks.
- * It is advised to use timelocks for the admin address in case of Validium since if can change the dataAvailabilityProtocol
  */
 contract PolygonValidiumEtrog is PolygonRollupBaseEtrog, IPolygonValidium {
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -87,7 +86,7 @@ contract PolygonValidiumEtrog is PolygonRollupBaseEtrog, IPolygonValidium {
         ValidiumBatchData[] calldata batches,
         address l2Coinbase,
         bytes calldata dataAvailabilityMessage
-    ) external onlyTrustedSequencer {
+    ) external virtual onlyTrustedSequencer {
         uint256 batchesNum = batches.length;
         if (batchesNum == 0) {
             revert SequenceZeroBatches();

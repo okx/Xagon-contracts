@@ -13,13 +13,12 @@ import "./lib/PolygonTransparentProxy.sol";
 import "./lib/PolygonAccessControlUpgradeable.sol";
 import "./lib/LegacyZKEVMStateVariables.sol";
 import "./consensus/zkEVM/PolygonZkEVMExistentEtrog.sol";
+import "./consensus/validium/PolygonValidiumEtrogIsolated.sol";
 import "./lib/PolygonConstantsBase.sol";
 
+// review Possible renaming to PolygonL2Manager
 /**
- * Contract responsible for managing rollups and the verification of their batches.
- * This contract will create and update rollups and store all the hashed sequenced data from them.
- * The logic for sequence batches is moved to the `consensus` contracts, while the verification of all of
- * them will be done in this one. In this way, the proof aggregation of the rollups will be easier on a close future.
+ * Contract responsible for managing the exit roots across multiple Rollups
  */
 contract PolygonRollupManager is
     PolygonAccessControlUpgradeable,
@@ -96,7 +95,7 @@ contract PolygonRollupManager is
     uint256 internal constant _MAX_BATCH_FEE = 1000 ether;
 
     // Min value batch fee
-    uint256 internal constant _MIN_BATCH_FEE = 1 gwei;
+    uint256 internal constant _MIN_BATCH_FEE = 0 gwei;
 
     // Goldilocks prime field
     uint256 internal constant _GOLDILOCKS_PRIME_FIELD = 0xFFFFFFFF00000001; // 2 ** 64 - 2 ** 32 + 1
@@ -389,16 +388,17 @@ contract PolygonRollupManager is
         address admin,
         address timelock,
         address emergencyCouncil,
-        PolygonZkEVMExistentEtrog polygonZkEVM,
+        PolygonValidiumEtrogIsolated polygonZkEVM,
         IVerifierRollup zkEVMVerifier,
         uint64 zkEVMForkID,
-        uint64 zkEVMChainID
+        uint32 zkEVMChainID,
+        address gasToken
     ) external virtual reinitializer(2) {
         pendingStateTimeout = _pendingStateTimeout;
         trustedAggregatorTimeout = _trustedAggregatorTimeout;
 
         // Constant deployment variables
-        _batchFee = 0.1 ether; // 0.1 POL
+        _batchFee = 0 ether; // 0 POL
         verifyBatchTimeTarget = 30 minutes;
         multiplierBatchFee = 1002;
 

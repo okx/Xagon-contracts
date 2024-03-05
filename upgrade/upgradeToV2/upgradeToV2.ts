@@ -7,7 +7,7 @@ import fs = require("fs");
 import * as dotenv from "dotenv";
 dotenv.config({path: path.resolve(__dirname, "../../.env")});
 import {ethers, upgrades} from "hardhat";
-import {PolygonZkEVM} from "../../typechain-types";
+import {PolygonZkEVM, PolygonValidium} from "../../typechain-types";
 
 const pathOutputJson = path.join(__dirname, "./upgrade_output.json");
 
@@ -18,6 +18,9 @@ const upgradeParameters = require("./upgrade_parameters.json");
 async function main() {
     upgrades.silenceWarnings();
 
+    const outputJson = {} as any;
+
+    const attemptsDeployProxy = 20;
     /*
      * Check upgrade parameters
      * Check that every necessary parameter is fullfilled
@@ -42,6 +45,7 @@ async function main() {
         "polygonZkEVMGlobalExitRootAddress",
         "polygonZkEVMAddress",
         "timelockContractAddress",
+        "gasTokenAddress",
     ];
 
     for (const parameterName of mandatoryOutputParameters) {
@@ -49,11 +53,29 @@ async function main() {
             throw new Error(`Missing parameter: ${parameterName}`);
         }
     }
+    const {consensusContract, dataAvailabilityProtocol} = deployParameters;
+    const supportedConensus = ["PolygonZkEVMEtrog", "PolygonValidiumEtrogIsolated"];
+
+    if (!supportedConensus.includes(consensusContract)) {
+        throw new Error(`Consensus contract not supported, supported contracts are: ${supportedConensus}`);
+    }
+
+    const supporteDataAvailabilityProtocols = ["PolygonDataCommittee"];
+
+    if (
+        consensusContract.includes("PolygonValidium") &&
+        !supporteDataAvailabilityProtocols.includes(dataAvailabilityProtocol)
+    ) {
+        throw new Error(
+            `Data availability protocol not supported, supported data availability protocols are: ${supporteDataAvailabilityProtocols}`
+        );
+    }
 
     const currentBridgeAddress = deployOutputParameters.polygonZkEVMBridgeAddress;
     const currentGlobalExitRootAddress = deployOutputParameters.polygonZkEVMGlobalExitRootAddress;
     const currentPolygonZkEVMAddress = deployOutputParameters.polygonZkEVMAddress;
     const currentTimelockAddress = deployOutputParameters.timelockContractAddress;
+    const gasToken = deployOutputParameters.gasTokenAddress;
 
     // Load onchain parameters
     const polygonZkEVMFactory = await ethers.getContractFactory("PolygonZkEVM");
@@ -205,21 +227,25 @@ async function main() {
     // Update current system to rollup manager
 
     // deploy polygon zkEVM impl
-    const PolygonZkEVMV2ExistentFactory = await ethers.getContractFactory("PolygonZkEVMExistentEtrog");
-    const polygonZkEVMEtrogImpl = await PolygonZkEVMV2ExistentFactory.deploy(
+
+    // Create consensus implementation
+    const PolygonConsensusFactory = (await ethers.getContractFactory(consensusContract, deployer)) as any;
+    let PolygonConsensusContract;
+
+    PolygonConsensusContract = await PolygonConsensusFactory.deploy(
         currentGlobalExitRootAddress,
         polTokenAddress,
         currentBridgeAddress,
         currentPolygonZkEVMAddress
     );
-    await polygonZkEVMEtrogImpl.waitForDeployment();
+    await PolygonConsensusContract.waitForDeployment();
 
     console.log("#######################\n");
-    console.log(`new PolygonZkEVM impl: ${polygonZkEVMEtrogImpl.target}`);
+    console.log(`new PolygonConsensusContract impl: ${PolygonConsensusFactory.target}`);
 
     console.log("you can verify the new impl address with:");
     console.log(
-        `npx hardhat verify --constructor-args upgrade/arguments.js ${polygonZkEVMEtrogImpl.target} --network ${process.env.HARDHAT_NETWORK}\n`
+        `npx hardhat verify --constructor-args upgrade/arguments.js ${PolygonConsensusContract.target} --network ${process.env.HARDHAT_NETWORK}\n`
     );
     console.log("Copy the following constructor arguments on: upgrade/arguments.js \n", [
         currentGlobalExitRootAddress,
@@ -231,7 +257,7 @@ async function main() {
     // deploy polygon zkEVM proxy
     const PolygonTransparentProxy = await ethers.getContractFactory("PolygonTransparentProxy");
     const newPolygonZkEVMContract = await PolygonTransparentProxy.deploy(
-        polygonZkEVMEtrogImpl.target,
+        PolygonConsensusContract.target,
         currentPolygonZkEVMAddress,
         "0x"
     );
@@ -244,11 +270,48 @@ async function main() {
         `npx hardhat verify --constructor-args upgrade/arguments.js ${newPolygonZkEVMContract.target} --network ${process.env.HARDHAT_NETWORK}\n`
     );
     console.log("Copy the following constructor arguments on: upgrade/arguments.js \n", [
-        polygonZkEVMEtrogImpl.target,
+        PolygonConsensusContract.target,
         currentPolygonZkEVMAddress,
         "0x",
     ]);
 
+    // deploy polygon data committee
+    let polygonDataCommittee;
+    if (consensusContract.includes("PolygonValidium") && dataAvailabilityProtocol === "PolygonDataCommittee") {
+        // deploy data commitee
+        const PolygonDataCommitteeContract = (await ethers.getContractFactory("PolygonDataCommittee", deployer)) as any;
+
+        for (let i = 0; i < attemptsDeployProxy; i++) {
+            try {
+                polygonDataCommittee = await upgrades.deployProxy(PolygonDataCommitteeContract, [], {
+                    unsafeAllow: ["constructor"],
+                });
+                break;
+            } catch (error: any) {
+                console.log(`attempt ${i}`);
+                console.log("upgrades.deployProxy of polygonDataCommittee ", error.message);
+            }
+            // reach limits of attempts
+            if (i + 1 === attemptsDeployProxy) {
+                throw new Error("polygonDataCommittee contract has not been deployed");
+            }
+        }
+
+        outputJson.polygonDataCommittee = polygonDataCommittee?.target;
+        // Load data commitee
+        // const PolygonValidiumContract = (await PolygonConsensusFactory.attach(
+        //     currentPolygonZkEVMAddress
+        // )) as PolygonValidium;
+        // add data commitee to the consensus contract
+        // if ((await PolygonValidiumContract.admin()) == deployer.address) {
+        //     await (
+        //         await PolygonValidiumContract.setDataAvailabilityProtocol(polygonDataCommittee?.target as any)
+        //     ).wait();
+
+        //     // Setup data commitee to 0
+        //     await (await polygonDataCommittee?.setupCommittee(0, [], "0x")).wait();
+        // }
+    }
     // Upgrade to rollup manager previous polygonZKEVM
     const PolygonRollupManagerFactory = await ethers.getContractFactory("PolygonRollupManager");
     const implRollupManager = await upgrades.prepareUpgrade(currentPolygonZkEVMAddress, PolygonRollupManagerFactory, {
@@ -286,6 +349,7 @@ async function main() {
                 verifierContract.target,
                 newForkID,
                 chainID,
+                gasToken,
             ]),
         ]),
         ethers.ZeroHash, // predecesoor
@@ -314,13 +378,12 @@ async function main() {
     console.log({scheduleData});
     console.log({executeData});
 
-    const outputJson = {
-        scheduleData,
-        executeData,
-        verifierAddress: verifierContract.target,
-        newPolygonZKEVM: newPolygonZkEVMContract.target,
-        timelockContractAdress: currentTimelockAddress,
-    };
+    outputJson.scheduleData = scheduleData;
+    outputJson.executeData = executeData;
+    outputJson.verifierAddress = verifierContract.target;
+    outputJson.newPolygonZKEVM = newPolygonZkEVMContract.target;
+    outputJson.timelockContractAdress = currentTimelockAddress;
+
     fs.writeFileSync(pathOutputJson, JSON.stringify(outputJson, null, 1));
 }
 
