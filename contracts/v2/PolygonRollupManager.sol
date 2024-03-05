@@ -96,7 +96,7 @@ contract PolygonRollupManager is
     uint256 internal constant _MAX_BATCH_FEE = 1000 ether;
 
     // Min value batch fee
-    uint256 internal constant _MIN_BATCH_FEE = 1 gwei;
+    uint256 internal constant _MIN_BATCH_FEE = 0 gwei;
 
     // Goldilocks prime field
     uint256 internal constant _GOLDILOCKS_PRIME_FIELD = 0xFFFFFFFF00000001; // 2 ** 64 - 2 ** 32 + 1
@@ -398,7 +398,7 @@ contract PolygonRollupManager is
         trustedAggregatorTimeout = _trustedAggregatorTimeout;
 
         // Constant deployment variables
-        _batchFee = 0.1 ether; // 0.1 POL
+        _batchFee = 0 ether; // 0 POL
         verifyBatchTimeTarget = 30 minutes;
         multiplierBatchFee = 1002;
 
