@@ -158,9 +158,6 @@ contract PolygonZkEVMBridgeL2V2 is
         bytes memory _gasTokenMetadata
     ) external virtual initializer {
         gasTokenMetadata = _gasTokenMetadata;
-
-        // Initialize OZ contracts
-        __ReentrancyGuard_init();
     }
 
     modifier onlyRollupManager() {
