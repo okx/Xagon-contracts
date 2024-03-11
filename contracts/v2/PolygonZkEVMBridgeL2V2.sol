@@ -156,7 +156,7 @@ contract PolygonZkEVMBridgeL2V2 is
         IBasePolygonZkEVMGlobalExitRoot _globalExitRootManager,
         address _polygonRollupManager,
         bytes memory _gasTokenMetadata
-    ) external virtual initializer {
+    ) external virtual reinitializer(2) {
         gasTokenMetadata = _gasTokenMetadata;
     }
 
