@@ -32,7 +32,7 @@ const config: HardhatUserConfig = {
                 settings: {
                     optimizer: {
                         enabled: true,
-                        runs: 999999,
+                        runs: 999,
                     },
                 },
             },
@@ -41,7 +41,7 @@ const config: HardhatUserConfig = {
                 settings: {
                     optimizer: {
                         enabled: true,
-                        runs: 999999,
+                        runs: 999,
                     },
                     evmVersion: "shanghai",
                 },
@@ -226,6 +226,15 @@ const config: HardhatUserConfig = {
         },
         polygonZKEVMMainnet: {
             url: "https://zkevm-rpc.com",
+            accounts: {
+                mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
+                path: "m/44'/60'/0'/0",
+                initialIndex: 0,
+                count: 20,
+            },
+        },
+        x1: {
+            url: "http://127.0.0.1:8123",
             accounts: {
                 mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
                 path: "m/44'/60'/0'/0",

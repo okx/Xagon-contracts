@@ -66,7 +66,7 @@ async function main() {
         consensusContract,
     } = createRollupParameters;
 
-    const supportedConensus = ["PolygonZkEVMEtrog", "PolygonValidiumEtrog"];
+    const supportedConensus = ["PolygonZkEVMEtrog", "PolygonValidiumEtrogIsolated"];
 
     if (!supportedConensus.includes(consensusContract)) {
         throw new Error(`Consensus contract not supported, supported contracts are: ${supportedConensus}`);
@@ -135,7 +135,7 @@ async function main() {
     // Load Rollup manager
     const PolgonRollupManagerFactory = await ethers.getContractFactory("PolygonRollupManager", deployer);
     const rollupManagerContract = PolgonRollupManagerFactory.attach(
-        deployOutput.polygonRollupManager
+        deployOutput.polygonRollupManagerAddress
     ) as PolygonRollupManager;
 
     const DEFAULT_ADMIN_ROLE = ethers.ZeroHash;
@@ -178,7 +178,7 @@ async function main() {
         deployOutput.polygonZkEVMGlobalExitRootAddress,
         deployOutput.polTokenAddress,
         deployOutput.polygonZkEVMBridgeAddress,
-        deployOutput.polygonRollupManager
+        deployOutput.polygonRollupManagerAddress
     );
     await PolygonconsensusContract.waitForDeployment();
 

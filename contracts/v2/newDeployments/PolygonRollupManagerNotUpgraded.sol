@@ -33,7 +33,7 @@ contract PolygonRollupManagerNotUpgraded is PolygonRollupManager {
         trustedAggregatorTimeout = _trustedAggregatorTimeout;
 
         // Constant deployment variables
-        _batchFee = 0.1 ether; // 0.1 Matic
+        _batchFee = 0 ether; // 0 Matic
         verifyBatchTimeTarget = 30 minutes;
         multiplierBatchFee = 1002;
 

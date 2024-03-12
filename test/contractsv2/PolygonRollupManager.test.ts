@@ -189,8 +189,8 @@ describe("Polygon Rollup Manager", () => {
         expect(await rollupManagerContract.pendingStateTimeout()).to.be.equal(pendingStateTimeoutDefault);
         expect(await rollupManagerContract.trustedAggregatorTimeout()).to.be.equal(trustedAggregatorTimeout);
 
-        expect(await rollupManagerContract.getBatchFee()).to.be.equal(ethers.parseEther("0.1"));
-        expect(await rollupManagerContract.getForcedBatchFee()).to.be.equal(ethers.parseEther("10"));
+        expect(await rollupManagerContract.getBatchFee()).to.be.equal(ethers.parseEther("0"));
+        expect(await rollupManagerContract.getForcedBatchFee()).to.be.equal(ethers.parseEther("0"));
         expect(await rollupManagerContract.calculateRewardPerBatch()).to.be.equal(0);
 
         // Check roles

@@ -1,6 +1,6 @@
 {   
     "realVerifier": true,
-    "newForkID": 7,
+    "newForkID": 8,
     "timelockDelay": 0,
     "timelockSalt": "",
     "polTokenAddress": "0xaddress"

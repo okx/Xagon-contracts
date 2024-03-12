@@ -69,7 +69,7 @@ async function main() {
     console.log("deploying with: ", deployer.address);
 
     // Prepare Upgrade PolygonZkEVMBridge
-    const PreviousBridgeFactory = (await ethers.getContractFactory("PolygonZkEVMBridge")) as any;
+    const PreviousBridgeFactory = (await ethers.getContractFactory("PolygonZkEVMBridgeL2")) as any;
 
     // Import OZ upgrades
     await upgrades.forceImport(currentBridgeAddress as string, PreviousBridgeFactory, "transparent" as any);
@@ -89,7 +89,7 @@ async function main() {
     console.log("timelockAddress: ", timelockContract.target, {timelockDelay});
 
     // prapare upgrades
-    const polygonZkEVMBridgeFactory = await ethers.getContractFactory("PolygonZkEVMBridgeV2", deployer);
+    const polygonZkEVMBridgeFactory = await ethers.getContractFactory("PolygonZkEVMBridgeL2V2", deployer);
 
     const newBridgeImpl = await upgrades.prepareUpgrade(currentBridgeAddress, polygonZkEVMBridgeFactory, {
         unsafeAllow: ["constructor"],
@@ -101,10 +101,33 @@ async function main() {
     console.log("you can verify the new impl address with:");
     console.log(`npx hardhat verify ${newBridgeImpl} --network ${process.env.HARDHAT_NETWORK}`);
 
+    const metaData = ethers.AbiCoder.defaultAbiCoder().encode(
+        ["string", "string", "uint8"],
+        [deployParameters.gasTokenName, deployParameters.gasTokenSymbol, deployParameters.gasTokenDecimals]
+    );
+
+    // uint32 _networkID,
+    // address _gasTokenAddress,
+    // uint32 _gasTokenNetwork,
+    // IBasePolygonZkEVMGlobalExitRoot _globalExitRootManager,
+    // address _polygonRollupManager,
+    // bytes memory _gasTokenMetadata
+
     const operationBridge = genOperation(
         proxyAdmin.target,
         0, // value
-        proxyAdmin.interface.encodeFunctionData("upgrade", [currentBridgeAddress, newBridgeImpl]),
+        proxyAdmin.interface.encodeFunctionData("upgradeAndCall", [
+            currentBridgeAddress,
+            newBridgeImpl,
+            polygonZkEVMBridgeFactory.interface.encodeFunctionData("initialize", [
+                0, // networkID
+                ethers.ZeroAddress, // gasTokenAddress
+                0, // gasTokenNetwork
+                ethers.ZeroAddress, // globalExitRootManager
+                ethers.ZeroAddress, // polygonRollupManager
+                metaData,
+            ]),
+        ]),
         ethers.ZeroHash, // predecesoor
         salt // salt
     );

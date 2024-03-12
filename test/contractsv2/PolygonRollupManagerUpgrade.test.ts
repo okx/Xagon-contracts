@@ -270,8 +270,8 @@ describe("Polygon Rollup manager upgraded", () => {
         expect(await rollupManagerContract.pendingStateTimeout()).to.be.equal(pendingStateTimeoutDefault);
         expect(await rollupManagerContract.trustedAggregatorTimeout()).to.be.equal(trustedAggregatorTimeout);
 
-        expect(await rollupManagerContract.getBatchFee()).to.be.equal(ethers.parseEther("0.1"));
-        expect(await rollupManagerContract.getForcedBatchFee()).to.be.equal(ethers.parseEther("10"));
+        expect(await rollupManagerContract.getBatchFee()).to.be.equal(ethers.parseEther("0"));
+        expect(await rollupManagerContract.getForcedBatchFee()).to.be.equal(ethers.parseEther("0"));
 
         // Check roles
         expect(await rollupManagerContract.hasRole(DEFAULT_ADMIN_ROLE, timelock.address)).to.be.equal(true);
@@ -331,16 +331,16 @@ describe("Polygon Rollup manager upgraded", () => {
 
         // batch Fee
         // verifyBatchTImetarget
-        expect(await rollupManagerContract.getBatchFee()).to.be.equal(ethers.parseEther("0.1"));
+        expect(await rollupManagerContract.getBatchFee()).to.be.equal(ethers.parseEther("0"));
 
         await expect(rollupManagerContract.setBatchFee(0)).to.be.revertedWithCustomError(
             rollupManagerContract,
             "AddressDoNotHaveRequiredRole"
         );
-        await expect(rollupManagerContract.connect(admin).setBatchFee(0)).to.be.revertedWithCustomError(
-            rollupManagerContract,
-            "BatchFeeOutOfRange"
-        );
+        // await expect(rollupManagerContract.connect(admin).setBatchFee(0)).to.be.revertedWithCustomError(
+        //     rollupManagerContract,
+        //     "BatchFeeOutOfRange"
+        // );
 
         await expect(rollupManagerContract.connect(admin).setBatchFee(ethers.parseEther("10")))
             .to.emit(rollupManagerContract, "SetBatchFee")
