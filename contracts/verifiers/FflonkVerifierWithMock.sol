@@ -204,6 +204,11 @@ contract FflonkVerifierWithMock {
         mockMode = false;
     }
 
+    function setAdmin(address _admin) public onlyAdmin {
+        require(_admin != address(0), "Admin address cannot be 0");
+        amdin = _admin;
+    }
+
     function verifyProof(
         bytes32[24] calldata proof,
         uint256[1] calldata pubSignals
