@@ -72,9 +72,9 @@ async function main() {
         throw new Error(`Consensus contract not supported, supported contracts are: ${supportedConensus}`);
     }
 
-    const dataAvailabilityProtocol = createRollupParameters.dataAvailabilityProtocol || "PolygonDataCommittee";
+    const dataAvailabilityProtocol = createRollupParameters.dataAvailabilityProtocol || "Celestia";
 
-    const supporteDataAvailabilityProtocols = ["PolygonDataCommittee"];
+    const supporteDataAvailabilityProtocols = ["Celestia"];
 
     if (
         consensusContract.includes("PolygonValidium") &&
@@ -257,7 +257,7 @@ async function main() {
     console.log("#######################\n");
     console.log("Created new Rollup:", newZKEVMAddress);
 
-    if (consensusContract.includes("PolygonValidium") && dataAvailabilityProtocol === "PolygonDataCommittee") {
+    if (consensusContract.includes("PolygonValidium") && dataAvailabilityProtocol === "Celestia") {
         // deploy data commitee
         const PolygonDataCommitteeContract = (await ethers.getContractFactory("PolygonDataCommittee", deployer)) as any;
         let polygonDataCommittee;
