@@ -1,0 +1,3 @@
+[submodule "contracts/eigenda/eigenda"]
+	path = contracts/eigenda/eigenda
+	url = https://github.com/Layr-Labs/eigenda
