@@ -1,0 +1,7 @@
+eigenda/=lib/eigenda/contracts/src/libraries/
+@openzeppelin-upgrades/=lib/openzeppelin-contracts-upgradeable/
+@openzeppelin/=lib/openzeppelin-contracts/
+eigenlayer-middleware/=lib/eigenda/contracts/lib/eigenlayer-middleware/src/
+eigenlayer-core/=lib/eigenda/contracts/lib/eigenlayer-middleware/lib/eigenlayer-contracts/src/
+eigenlayer-scripts/=lib/eigenda/contracts/lib/eigenlayer-middleware/lib/eigenlayer-contracts/script/
+forge-std/=lib/forge-std/src/
