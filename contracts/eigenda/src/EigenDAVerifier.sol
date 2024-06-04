@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 
 import {EigenDARollupUtils} from "eigenda/libraries/EigenDARollupUtils.sol";
 import {IEigenDAServiceManager} from "eigenda/interfaces/IEigenDAServiceManager.sol";
-import {BN254} from "eigenlayer-middleware/libraries/BN254.sol";
 import "../interfaces/IDataAvailabilityProtocol.sol";
 import "../interfaces/IPolygonZkEVMVEtrogErrors.sol";
 
@@ -77,6 +76,13 @@ contract EigenDAVerifier is
      */
     function getProcotolName() external pure returns (string memory) {
         return _PROTOCOL_NAME;
+    }
+
+    /**
+     * @notice Return the data availability protocol address
+     */
+    function getDataAvailabilityProtocol() external view returns (address) {
+        return address(dataAvailabilityProtocol);
     }
 
     /////////////////////////////////////////////
