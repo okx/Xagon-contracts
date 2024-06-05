@@ -39,9 +39,9 @@ contract EigenDAVerifier is
     address public pendingAdmin;
 
     /**
-     * @dev Emitted when the admin updates the data availability protocol address
+     * @dev Emitted when the admin updates the data availability protocol
      */
-    event SetDataAvailabilityProtocol(IEigenDAServiceManager newTrustedSequencer);
+    event SetDataAvailabilityProtocol(IEigenDAServiceManager newDataAvailabilityProtocol);
 
     /**
      * @dev Emitted when the admin starts the two-step transfer role setting a new pending admin
@@ -103,7 +103,7 @@ contract EigenDAVerifier is
 
     /**
      * @notice Allow the admin to set a new data availability protocol
-     * @param newDataAvailabilityProtocol Address of the new trusted sequencer
+     * @param newDataAvailabilityProtocol Address of the new data availability protocol
      */
     function setDataAvailabilityProtocol(
         IEigenDAServiceManager newDataAvailabilityProtocol
