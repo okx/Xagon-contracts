@@ -67,7 +67,7 @@ async function main() {
         verifierContract = await VerifierRollup.deploy();
         await verifierContract.waitForDeployment();
     } else {
-        const VerifierRollupHelperFactory = await ethers.getContractFactory("VerifierRollupHelperMock", deployer);
+        const VerifierRollupHelperFactory = await ethers.getContractFactory("FflonkVerifierWithMock", deployer);
         verifierContract = await VerifierRollupHelperFactory.deploy();
         await verifierContract.waitForDeployment();
     }
